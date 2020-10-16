@@ -13,8 +13,8 @@ setup(
 
     author="IAGerogiannis",
     author_email='iagerogiannis@gmail.com',
-    description="Basic numerical analysis tools, useful for parameterization of aerodynamic shapes, like airfoils "
-                "or ducts.",
+    description="Numerical Analysis contains some basic numerical methods for solving equations, integrating "
+                "functions and parameterizing curves with Bezier Polynomials.",
     url="https://github.com/iagerogiannis/numerical-analysis",
     install_requires=install_requires,
     license="BSD"
