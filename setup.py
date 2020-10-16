@@ -8,7 +8,7 @@ install_requires = [
 
 setup(
     name="numerical_analysis",
-    version="0.0.1",
+    version="0.0.11",
     packages=find_packages(),
 
     author="IAGerogiannis",
