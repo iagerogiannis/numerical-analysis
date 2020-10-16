@@ -13,7 +13,7 @@ setup(
 
     author="IAGerogiannis",
     author_email='iagerogiannis@gmail.com',
-    description="Basic numerical analysis tools, useful for parameterization of aerodynamic shapes, like airfoils, "
+    description="Basic numerical analysis tools, useful for parameterization of aerodynamic shapes, like airfoils "
                 "or ducts.",
     url="https://github.com/iagerogiannis/numerical-analysis",
     install_requires=install_requires,
