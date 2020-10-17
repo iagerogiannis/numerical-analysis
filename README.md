@@ -7,7 +7,7 @@ Numerical Analysis contains some basic numerical methods for solving equations, 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install numerical-analysis.
 
 ```bash
-py -m pip install numerical_analysis
+pip install numerical_analysis
 ```
 
 ## Requirements
