@@ -1,3 +1,17 @@
+def bisection(f, x0, x1, error=1e-15):
+    if f(x0)*f(x1) > 0:
+        print("No root found.")
+    else:
+        while True:
+            mid = 0.5 * (x0 + x1)
+            if abs(f(mid)) < error:
+                return mid
+            elif f(x0)*f(mid) > 0:
+                x0 = mid
+            else:
+                x1 = mid
+
+
 def secant(f, x0, x1, error=1e-15):
     fx0 = f(x0)
     fx1 = f(x1)
@@ -17,12 +31,14 @@ def newton_raphson(f, df_dx, x0, error=1e-15):
 def newton_raphson_multiple_roots(f, df_dx, n, error=1e-15):
 
     def sigma(x):
+        nonlocal roots
         s = 0
         for root in roots:
             s += 1/(x - root)
         return s
 
     def nr_step(xold):
+        nonlocal xk_old
         return xold - f(xold) / (df_dx(xold) - f(xold)*sigma(xold))
 
     roots = []

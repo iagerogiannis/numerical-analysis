@@ -51,10 +51,9 @@ class Polynomial:
 
         c = np.array([0.] * (n + 1))
 
-        for m in range(0, n // 2 + 1):
+        for m in range(n // 2 + 1):
             c[n - 2 * m] = (-1) ** m * math.factorial(2 * n - 2 * m) / \
                            (2 ** n * math.factorial(m) * math.factorial(n - m) * math.factorial(n - 2 * m))
-
         return cls(c)
 
     @classmethod

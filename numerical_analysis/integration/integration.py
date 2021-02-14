@@ -98,7 +98,7 @@ def romberg(f, x0, xn, level):
     return Irom[0][-1]
 
 
-def gauss_legendre(f, a, b, n):
+def gauss_legendre(f, x0, xn, n):
 
     p = Polynomial.legendre(n+1)
 
@@ -109,11 +109,10 @@ def gauss_legendre(f, a, b, n):
     for i in range(n+1):
         w.append(L[i].definite_integral(-1, 1))
 
-    I = 0
-
+    I = 0.
     for i in range(n+1):
-        I += w[i]*f((x[i]*(b-a)+b+a)/2)
+        I += w[i]*f((x[i] * (xn - x0) + xn + x0) / 2)
 
-    I *= (b-a)/2
+    I *= 0.5 * (xn - x0)
 
     return I
