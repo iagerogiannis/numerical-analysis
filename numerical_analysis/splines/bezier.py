@@ -61,8 +61,8 @@ class Bezier(GeometricalPlace):
         self.cp[i][0] = new_control_point[0]
         self.cp[i][1] = new_control_point[1]
         self.c = self.polynomial_coefficients()
-        self.polynomials = {"x(t)": Polynomial(self.c[0]),
-                            "y(t)": Polynomial(self.c[1]),
+        self.polynomials = {"x": Polynomial(self.c[0]),
+                            "y": Polynomial(self.c[1]),
                             "dx/dt": Polynomial(self.c[0]).derivative(),
                             "dy/dt": Polynomial(self.c[1]).derivative(),
                             "p": [Polynomial(self.m[i]) for i in range(self.n + 1)]}
