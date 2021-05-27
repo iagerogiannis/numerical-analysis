@@ -1,7 +1,7 @@
 import math
 
 import matplotlib.pyplot as plt
-from numpy import arange
+import numpy as np
 
 from numerical_analysis.dependencies import Polynomial
 
@@ -22,7 +22,7 @@ class GeometricalPlace:
 
     def graph(self, dt):
         graph = [[], []]
-        for t in arange(0., 1. + dt, dt):
+        for t in np.arange(0., 1. + dt, dt):
             for k in range(2):
                 graph[k].append(self.point_t(t)[k])
         return graph
@@ -56,13 +56,25 @@ class StraightLine(GeometricalPlace):
         c = (y1 - y0) / (t1 - t0)
         d = (y0 * t1 - y1 * t0) / (t1 - t0)
 
-        return [[b, a], [d, c]]
+        return np.array([[b, a], [d, c]])
 
     def x_t(self, t):
         return Polynomial(self.c[0]).value(t)
 
     def y_t(self, t):
         return Polynomial(self.c[1]).value(t)
+
+    def slope_rad(self):
+        if self.x_t(1.) != self.x_t(0.):
+            phi = math.atan((self.y_t(1.) - self.y_t(0.)) / (self.x_t(1.) - self.x_t(0.)))
+            if self.x_t(1.) > self.x_t(0.):
+                return phi
+            else:
+                return phi + math.pi
+        elif self.x_t(1.) > self.x_t(0.):
+            return math.pi / 2
+        else:
+            return 3 * math.pi / 2
 
     # noinspection PyMethodOverriding
     def graph(self, ta, tb):
@@ -82,8 +94,8 @@ class Circle(GeometricalPlace):
         self.R = radius
         super().__init__()
 
-    def x_t(self, t):
-        return self.R * math.cos(math.pi - 2 * math.pi * t) + self.C[0]
+    def x_t(self, angle_rad):
+        return self.R * math.cos(angle_rad) + self.C[0]
 
-    def y_t(self, t):
-        return self.R * math.sin(math.pi - 2 * math.pi * t) + self.C[1]
+    def y_t(self, angle_rad):
+        return self.R * math.sin(angle_rad) + self.C[1]

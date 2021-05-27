@@ -1,6 +1,5 @@
 import numpy as np
 import numerical_analysis as na
-from numerical_analysis.dependencies.polynomial import Polynomial
 
 import datetime
 
