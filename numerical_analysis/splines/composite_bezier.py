@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from numerical_analysis.dependencies import GeometricalPlace
+from numerical_analysis.dependencies import GeometricalPlace, StraightLine, Circle
 from numerical_analysis.splines import Bezier
 
 
@@ -84,15 +84,43 @@ class CompositeBezier(GeometricalPlace):
         if export:
             plt.savefig(filename)
 
-    def modify_control_point(self, i, new_control_point):
-        x_diff = new_control_point[0] - self.cp[i][0]
-        y_diff = new_control_point[1] - self.cp[i][1]
-        diff = [x_diff, y_diff]
-        self.cp[i][0] += x_diff
-        self.cp[i][1] += y_diff
-        sector_ind, point_ind = self.global_to_local_index(i)
+    def modify_control_point(self, ind, new_control_point, tangent_links=False, called_by_recursion=False):
+
+        def modify_neighbor():
+            neighbor_ind = self.local_to_global_index(neighbor_sector_ind, neighbor_point_ind)
+            mid_ind = (neighbor_ind + ind) // 2
+            p0 = self.cp[ind]
+            p1 = self.cp[mid_ind]
+            p2 = self.cp[neighbor_ind]
+            r = ((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2) ** .5
+            line = StraightLine([[-1., p0], [0., p1]])
+            slope_angle = line.slope_rad()
+            circle = Circle(p1, r)
+            new_neighbor_point = [circle.x_t(slope_angle), circle.y_t(slope_angle)]
+            self.modify_control_point(neighbor_ind, new_neighbor_point, called_by_recursion=True)
+
+        diff = [new_control_point[i] - self.cp[ind][i] for i in range(2)]
+        self.cp[ind] += diff
+        sector_ind, point_ind = self.global_to_local_index(ind)
         for j in range(len(sector_ind)):
-            self.sectors[sector_ind[j]].modify_control_point(point_ind[j], self.cp[i])
+            self.sectors[sector_ind[j]].modify_control_point(point_ind[j], self.cp[ind])
+        if tangent_links and not called_by_recursion:
+            if len(sector_ind) > 1:
+                for j in [-1, 1]:
+                    new_neighbor_point = self.cp[ind + j] + diff
+                    self.modify_control_point(ind + j, new_neighbor_point, called_by_recursion=True)
+            else:
+                if point_ind[0] == 1 and sector_ind[0] > 0:
+                    neighbor_point_ind = self.order - 1
+                    neighbor_sector_ind = sector_ind[0] - 1
+                    modify_neighbor()
+                elif point_ind[0] == self.order - 1 and sector_ind[0] < len(self.sectors) - 1:
+                    neighbor_point_ind = 1
+                    neighbor_sector_ind = sector_ind[0] + 1
+                    modify_neighbor()
+
+    def append_sector(self, ):
+        pass
 
 
 class CompositeQuadraticBezier(CompositeBezier):
@@ -127,25 +155,24 @@ class CompositeQuadraticBezier(CompositeBezier):
             self.fake_cp = np.insert(self.fake_cp, i + 1, self.mid_cp(self.fake_cp[i], self.fake_cp[i + 1]), 0)
             i += 2
 
-    def modify_control_point(self, i, new_control_point):
-        self.cp[i][0] = new_control_point[0]
-        self.cp[i][1] = new_control_point[1]
-        sector_ind, point_ind = self.global_to_local_index(i)
-        self.sectors[sector_ind].modify_control_point(point_ind, self.cp[i])
+    def modify_control_point(self, ind, new_control_point, tangent_links=False, called_by_recursion=False):
+        self.cp[ind][0] = new_control_point[0]
+        self.cp[ind][1] = new_control_point[1]
+        sector_ind, point_ind = self.global_to_local_index(ind)
+        self.sectors[sector_ind].modify_control_point(point_ind, self.cp[ind])
         if point_ind == 1:
             if sector_ind != 0:
-                mid = self.mid_cp(self.cp[i], self.cp[i-1])
+                mid = self.mid_cp(self.cp[ind], self.cp[ind - 1])
                 self.sectors[sector_ind].modify_control_point(0, mid)
-                self.sectors[sector_ind - 1].modify_control_point(2, self.mid_cp(self.cp[i], self.cp[i-1]))
+                self.sectors[sector_ind - 1].modify_control_point(2, self.mid_cp(self.cp[ind], self.cp[ind - 1]))
             if sector_ind != len(self.sectors) - 1:
-                mid = self.mid_cp(self.cp[i], self.cp[i+1])
+                mid = self.mid_cp(self.cp[ind], self.cp[ind + 1])
                 self.sectors[sector_ind].modify_control_point(2, mid)
                 self.sectors[sector_ind + 1].modify_control_point(0, mid)
 
     @staticmethod
     def mid_cp(cp0, cp1):
         return np.array([0.5 * (cp0[0] + cp1[0]), 0.5 * (cp0[1] + cp1[1])])
-
 
 
 class CompositeCubicBezier(CompositeBezier):

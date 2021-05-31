@@ -57,15 +57,22 @@ class Bezier(GeometricalPlace):
         plt.plot(graph[0], graph[1], self.graph_cp()[0], self.graph_cp()[1])
         plt.show()
 
-    def modify_control_point(self, i, new_control_point):
-        self.cp[i][0] = new_control_point[0]
-        self.cp[i][1] = new_control_point[1]
+    def update(self):
         self.c = self.polynomial_coefficients()
         self.polynomials = {"x": Polynomial(self.c[0]),
                             "y": Polynomial(self.c[1]),
                             "dx/dt": Polynomial(self.c[0]).derivative(),
                             "dy/dt": Polynomial(self.c[1]).derivative(),
                             "p": [Polynomial(self.m[i]) for i in range(self.n + 1)]}
+
+    def modify_control_point(self, i, new_control_point):
+        self.cp[i][0] = new_control_point[0]
+        self.cp[i][1] = new_control_point[1]
+        self.update()
+
+    def append_control_point(self, new_control_point):
+        self.cp = np.append(self.cp, [new_control_point], axis=0)
+        self.update()
 
     def change_datatype(self, datatype):
         self.datatype = datatype
