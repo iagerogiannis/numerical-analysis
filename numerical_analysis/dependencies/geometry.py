@@ -71,7 +71,7 @@ class StraightLine(GeometricalPlace):
                 return phi
             else:
                 return phi + math.pi
-        elif self.x_t(1.) > self.x_t(0.):
+        elif self.y_t(1.) > self.y_t(0.):
             return math.pi / 2
         else:
             return 3 * math.pi / 2
