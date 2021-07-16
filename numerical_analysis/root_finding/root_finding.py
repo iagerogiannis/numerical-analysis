@@ -11,6 +11,7 @@ def bisection(f, x0, x1, error=1e-15):
             else:
                 x1 = mid
 
+
 def secant(f, x0, x1, error=1e-15):
     fx0 = f(x0)
     fx1 = f(x1)
@@ -20,38 +21,31 @@ def secant(f, x0, x1, error=1e-15):
         fx0, fx1 = fx1, f(x2)
     return x1
 
+
 def newton_raphson(f, df_dx, x0, error=1e-15):
     while abs(f(x0)) > error:
         x0 -= f(x0) / df_dx(x0)
     return x0
 
-def newton_raphson_multiple_roots(f, df_dx, n, error=1e-15):
 
-    def sigma(x):
-        nonlocal roots
-        s = 0
-        for root in roots:
-            s += 1 / (x - root)
-        return s
+def newton_raphson_2x2(f, g, fx, fy, gx, gy, x0, y0, error=1e-15):
 
-    def nr_step(xold):
-        nonlocal xk_old
-        return xold - f(xold) / (df_dx(xold) - f(xold) * sigma(xold))
+    while abs(f(x0, y0)) > error or abs(g(x0, y0)) > error:
+        jacobian = fx(x0, y0) * gy(x0, y0) - gx(x0, y0) * fy(x0, y0)
+        x0 = x0 + (g(x0, y0) * fy(x0, y0) - f(x0, y0) * gy(x0, y0)) / jacobian
+        y0 = y0 + (f(x0, y0) * gx(x0, y0) - g(x0, y0) * fx(x0, y0)) / jacobian
+
+    return x0, y0
+
+
+def newton_raphson_multiple_roots(f, df_dx, n, x0=2., error=1e-15):
 
     roots = []
 
     for i in range(n):
-
-        xk_old = 2
-        xk_new = nr_step(xk_old)
-        ek = xk_new - xk_old
-        xk_old = xk_new
-
-        while abs(ek) > error:
-            xk_new = nr_step(xk_old)
-            ek = xk_new - xk_old
-            xk_old = xk_new
-
-        roots.append(xk_new)
+        xi = x0
+        while abs(f(xi)) > error:
+            xi -= f(xi) / (df_dx(xi) - f(xi) * sum([1 / (xi - root) for root in roots]))
+        roots.append(xi)
 
     return sorted(roots)
