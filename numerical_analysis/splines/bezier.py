@@ -70,6 +70,14 @@ class Bezier(GeometricalPlace):
         self.cp[i][1] = new_control_point[1]
         self.update()
 
+    def modify_control_point_coordinate(self, i, k, new_control_point_coordinate):
+        self.cp[i, k] = new_control_point_coordinate
+        self.update()
+
+    def refresh_control_points(self, control_points):
+        self.cp = control_points
+        self.update()
+
     def append_control_point(self, new_control_point):
         self.cp = np.append(self.cp, [new_control_point], axis=0)
         self.update()
