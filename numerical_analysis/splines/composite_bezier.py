@@ -39,14 +39,14 @@ class CompositeBezier(GeometricalPlace):
             u = 1.
         return i, u
 
-    def y_x(self, x):
+    def y_x(self, x, error=1e-14):
         def detect_sector():
             i = 0
             while True:
                 if self.sectors[i].x_t(1.) >= x:
                     return i
                 i += 1
-        return self.sectors[detect_sector()].y_x(x)
+        return self.sectors[detect_sector()].y_x(x, error)
 
     def x_t(self, t):
         i, u = self.translate_t(t)

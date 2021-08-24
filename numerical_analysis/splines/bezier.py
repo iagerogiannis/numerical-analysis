@@ -29,8 +29,8 @@ class Bezier(GeometricalPlace):
             c[k] = np.matmul(np.transpose(self.m), self.cp[:, k])
         return c
 
-    def y_x(self, x):
-        t0 = newton_raphson(lambda t: self.x_t(t) - x, self.dx_dt, 0.5, 1e-14)
+    def y_x(self, x, error=1e-14):
+        t0 = newton_raphson(lambda t: self.x_t(t) - x, self.dx_dt, 0.5, error)
         return self.y_t(t0)
 
     def x_t(self, t):
